@@ -51,7 +51,7 @@ function! TailMinusF(file)
     " utility calls
     execute "autocmd BufWinEnter " . l:file . " call TailMinusF_Setup()"
     execute "autocmd BufWinLeave " . l:file . " call TailMinusF_Stop()"
-    execute "autocmd FileChangedShell " . l:file . " :call TailMinusF_Refresh()"
+    execute "autocmd FileChangedShellPost " . l:file . " :call TailMinusF_Refresh()"
   augroup END
 
   " set up the new window with minimal functionality
@@ -90,6 +90,7 @@ function! TailMinusF_Setup()
   setlocal nowrap
   setlocal nonumber
   setlocal previewwindow
+  setlocal autoread
   "setlocal statusline=%F\ %{TailMinusF_Monitor()}
 
   call TailMinusF_SetCursor()
@@ -102,15 +103,7 @@ endfunction
 function! TailMinusF_Refresh()
   if &previewwindow
     " if the cursor is on the last line, we'll move it with the update
-    if line(".") != line("$")
-      let l:update_cursor = 0
-    else
-      let l:update_cursor = 1
-    endif
-
-    " do all the necessary updates
-    silent execute "edit!"
-    if l:update_cursor
+    if line(".") == line("$")
       call TailMinusF_SetCursor()
     endif
   else
@@ -118,14 +111,12 @@ function! TailMinusF_Refresh()
     wincmd P
 
     " do all the necessary updates
-    silent execute "edit!"
     call TailMinusF_SetCursor()
 
     " jump back
     wincmd p
   endif
 endfunction
-
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " used by TailMinusF to set the cursor position in the preview window
