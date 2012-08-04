@@ -36,21 +36,12 @@ function! tailminusf#TailMinusF(file)
     execute ':' . bufnr(l:file) . 'bwipeout'
   endif
 
-  " set it up to be watched closely
-  augroup TailMinusF
-    " monitor calls -- try to catch the update as much as possible
-    autocmd CursorHold * call tailminusf#Monitor()
-    autocmd FocusLost * call tailminusf#Monitor()
-    autocmd FocusGained * call tailminusf#Monitor()
-
-    " utility calls
-    execute "autocmd BufWinEnter " . l:file . " call tailminusf#Setup()"
-    execute "autocmd BufWinLeave " . l:file . " call tailminusf#Stop()"
-    execute "autocmd FileChangedShellPost " . l:file . " :call tailminusf#Refresh()"
-  augroup END
-
   " set up the new window with minimal functionality
-  silent execute g:TailMinusF_Height . "new " . l:file
+  silent execute "pedit " . l:file
+  wincmd P
+  silent execute 'resize '. g:TailMinusF_Height
+  call tailminusf#Setup()
+  wincmd p
 endfunction
 
 
@@ -82,11 +73,23 @@ function! tailminusf#Setup()
   setlocal bufhidden=delete
   setlocal nobuflisted
   setlocal nomodifiable
+  setlocal readonly
   setlocal nowrap
   setlocal nonumber
-  setlocal previewwindow
   setlocal autoread
   "setlocal statusline=%F\ %{tailminusf#Monitor()}
+
+  " set it up to be watched closely
+  augroup TailMinusF
+    " monitor calls -- try to catch the update as much as possible
+    autocmd CursorHold * call tailminusf#Monitor()
+    autocmd FocusLost * call tailminusf#Monitor()
+    autocmd FocusGained * call tailminusf#Monitor()
+
+    " utility calls
+    autocmd BufWinLeave <buffer> call tailminusf#Stop()
+    autocmd FileChangedShellPost <buffer> :call tailminusf#Refresh()
+  augroup END
 
   call tailminusf#SetCursor()
 endfunction
