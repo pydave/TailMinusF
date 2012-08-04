@@ -12,7 +12,7 @@ endif
 
 " set the default options for the plugin
 if !exists("g:TailMinusF_Height")
-  let g:TailMinusF_Height = 10
+  let g:TailMinusF_Height = &previewheight
 endif
 if !exists("g:TailMinusF_Center_Win")
   let g:TailMinusF_Center_Win = 0
