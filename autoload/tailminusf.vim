@@ -49,7 +49,12 @@ endfunction
 " used by TailMinusF to check the file status
 function! tailminusf#Monitor()
   " do our file change checks
-  checktime   " the easy check
+  if has('win32') || has('win64')
+    " checktime + autoread isn't enough make the preview window update on Win7.
+    pedit
+  else
+    checktime   " the easy check
+  endif
 
   " update the status indicator
   if g:TailMinusF_status == "|"
