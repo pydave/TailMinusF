@@ -18,11 +18,12 @@ if !exists("g:TailMinusF_Center_Win")
   let g:TailMinusF_Center_Win = 0
 endif
 
+let s:status_icon = [ "|" , "/" , "/" , "-" , "-" , "\\" , "\\" , "|" ]
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " sets up the preview window to watch the specified file for changes
 function! tailminusf#TailMinusF(file)
-  let g:TailMinusF_status = "|"
+  let g:TailMinusF_status = 0
   let l:file = substitute(expand(a:file), "\\", "/", "g")
 
   if !filereadable(l:file)
@@ -57,16 +58,11 @@ function! tailminusf#Monitor()
   endif
 
   " update the status indicator
-  if g:TailMinusF_status == "|"
-    let g:TailMinusF_status = "/"
-  elseif g:TailMinusF_status == "/"
-    let g:TailMinusF_status = "-"
-  elseif g:TailMinusF_status == "-"
-    let g:TailMinusF_status = "\\"
-  elseif g:TailMinusF_status == "\\"
-    let g:TailMinusF_status = "|"
+  let g:TailMinusF_status += 1
+  if g:TailMinusF_status > len(s:status_icon)
+    let g:TailMinusF_status = 0
   endif
-  return g:TailMinusF_status
+  return s:status_icon[g:TailMinusF_status]
 endfunction
 
 
